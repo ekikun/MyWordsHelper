@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
                     recyclerView.setAdapter(adpater);
                     recyclerView.setLayoutManager(manager1);
                 }else {
-                    adpater = new MyAdpater(R.layout.word_item,wordList);
+                    adpater = new MyAdpater(R.layout.card_word_item,wordList);
                     recyclerView.setAdapter(adpater);
                     recyclerView.setLayoutManager(manager2);
                 }
