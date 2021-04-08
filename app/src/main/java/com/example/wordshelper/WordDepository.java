@@ -98,6 +98,7 @@ public class WordDepository {
         @Override
         public void run() {
             dao.deleteAll();
+            dao.clear();
         }
     }
 

@@ -32,6 +32,10 @@ public class MyViewModel  extends ViewModel {
            depository.delete(word);
        }
 
+       void deleteAll(){
+           depository.deleteAll();
+       }
+
        LiveData<List<Word>> getList(){
            return liveWordlist;
        }

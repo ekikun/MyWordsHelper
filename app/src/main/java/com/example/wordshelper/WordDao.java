@@ -21,7 +21,7 @@ public interface WordDao {
     @Delete
     public void delete(Word word);
 
-    @Query("DELETE FROM Word")
+    @Query("DELETE FROM Word;")
     public void deleteAll();
 
     @Query("SELECT * FROM Word")
@@ -30,4 +30,7 @@ public interface WordDao {
 
     @Query("SELECT * FROM Word WHERE id = :id")
     public LiveData<Word> queryByid(int id);
+
+    @Query("DELETE FROM sqlite_sequence")
+    public void clear();
 }
