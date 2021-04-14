@@ -44,14 +44,14 @@ public class MainActivity extends AppCompatActivity {
     int oldSize = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        change = false;
+        change = true;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         recyclerView = findViewById(R.id.recyclerView);
         manager1 = new LinearLayoutManager(this);
         manager2 = new GridLayoutManager(this,1);
         MyViewModel viewModel = new ViewModelProvider(this,new ViewModelProvider.NewInstanceFactory()).get(MyViewModel.class);
-        adpater_r = new MyAdpater(R.layout.word_item, new ArrayList<Word>(),viewModel);
+        adpater_r = new MyAdpater(R.layout.word_item_update, new ArrayList<Word>(),viewModel);
         adpater_c = new MyAdpater(R.layout.card_word_item, new ArrayList<Word>(),viewModel);
         viewModel.init(this);
         viewModel.deleteAll();
@@ -79,13 +79,17 @@ public class MainActivity extends AppCompatActivity {
                 if(!change){
                     MyAdpater adpater = adpater_r;
                     adpater.setList(wordList);
-                    adpater.setOnItemClickListener((adapter, view, position) -> {
-                        if (view.getId() == R.id.recycler) {
-                            System.out.println("被点击");
-                            Uri uri = Uri.parse("https://m.youdao.com/dict?le=eng&q="+wordList.get(position).getEnglish());
-                            Intent intent = new Intent(Intent.ACTION_VIEW);
-                            intent.setData(uri);
-                            startActivity(intent);
+                    adpater.addChildClickViewIds(R.id.Layout1);
+                    adpater.setOnItemChildClickListener(new OnItemChildClickListener() {
+                        @Override
+                        public void onItemChildClick(@NonNull BaseQuickAdapter adapter, @NonNull View view, int position) {
+                            if (view.getId() == R.id.Layout1) {
+                                System.out.println("被点击");
+                                Uri uri = Uri.parse("https://m.youdao.com/dict?le=eng&q="+wordList.get(position).getEnglish());
+                                Intent intent = new Intent(Intent.ACTION_VIEW);
+                                intent.setData(uri);
+                                startActivity(intent);
+                            }
                         }
                     });
                     recyclerView.setAdapter(adpater);
