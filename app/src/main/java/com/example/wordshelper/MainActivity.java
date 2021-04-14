@@ -40,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
     MyAdpater adpater_c;
 
     boolean change;
+
+    int oldSize = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         change = false;
@@ -48,9 +50,9 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         manager1 = new LinearLayoutManager(this);
         manager2 = new GridLayoutManager(this,1);
-        adpater_r = new MyAdpater(R.layout.word_item, new ArrayList<Word>());
-        adpater_c = new MyAdpater(R.layout.card_word_item, new ArrayList<Word>());
         MyViewModel viewModel = new ViewModelProvider(this,new ViewModelProvider.NewInstanceFactory()).get(MyViewModel.class);
+        adpater_r = new MyAdpater(R.layout.word_item, new ArrayList<Word>(),viewModel);
+        adpater_c = new MyAdpater(R.layout.card_word_item, new ArrayList<Word>(),viewModel);
         viewModel.init(this);
         viewModel.deleteAll();
         Button btn_insert = findViewById(R.id.btn_insert);
@@ -67,61 +69,13 @@ public class MainActivity extends AppCompatActivity {
                 change = !change;
             }
         });
-        adpater_r.addChildClickViewIds(R.id.switch1);
-
-        adpater_r.setOnItemChildClickListener(new OnItemChildClickListener() {
-            @Override
-            public void onItemChildClick(@NonNull BaseQuickAdapter adapter, @NonNull View view, int position) {
-                if(view.getId()==R.id.switch1){
-                    Log.d("点击了", String.valueOf(position)+" swtich");
-                    Switch switch1 = (Switch) view;
-                    switch1.setChecked(false);
-                    Word word = (Word) adapter.getItem(position);
-                    switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                        @Override
-                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                            if(isChecked){
-                               word.setInv_chinese(false);
-                               Log.d("设置为不可视",String.valueOf(word.isInv_chinese()));
-                                viewModel.update(word);
-                            }else{
-                                word.setInv_chinese(true);
-                                Log.d("设置为可视",String.valueOf(word.isInv_chinese()));
-                                viewModel.update(word);
-                            }
-                        }
-                    });
-                }
-            }
-        });
-        adpater_c.addChildClickViewIds(R.id.switch1);
-        adpater_c.setOnItemChildClickListener(new OnItemChildClickListener() {
-            @Override
-            public void onItemChildClick(@NonNull BaseQuickAdapter adapter, @NonNull View view, int position) {
-                if(view.getId()==R.id.switch1){
-                    Log.d("点击了", String.valueOf(position)+" swtich");
-                    Switch switch1 = (Switch) view;
-                    switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                        @Override
-                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                            if(isChecked){
-                                Word word = (Word) adapter.getItem(position);
-                                word.setInv_chinese(true);
-                                viewModel.update(word);
-                            }else{
-                                Word word = (Word) adapter.getItem(position);
-                                word.setInv_chinese(true);
-                                viewModel.update(word);
-                            }
-                        }
-                    });
-                }
-            }
-        });
         viewModel.getList().observe(MainActivity.this, new Observer<List<Word>>() {
             @Override
             public void onChanged(List<Word> words) {
                 List<Word> wordList = viewModel.getList().getValue();
+                if(wordList.size()== oldSize){
+                    return;
+                }
                 if(!change){
                     MyAdpater adpater = adpater_r;
                     adpater.setList(wordList);
@@ -136,7 +90,11 @@ public class MainActivity extends AppCompatActivity {
                     });
                     recyclerView.setAdapter(adpater);
                     recyclerView.setLayoutManager(manager1);
+                    oldSize = wordList.size();
                 }else {
+                    if(wordList.size()== oldSize){
+                        return;
+                    }
                     MyAdpater adpater = adpater_c;
                     adpater.setList(wordList);
                     adpater.setOnItemClickListener((adapter, view, position) -> {
@@ -147,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
                     });
                     recyclerView.setAdapter(adpater);
                     recyclerView.setLayoutManager(manager2);
+                    oldSize = wordList.size();
                 }
             }
         });
