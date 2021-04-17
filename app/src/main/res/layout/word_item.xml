@@ -23,7 +23,7 @@
         app:layout_constraintGuide_percent="0.85" />
 
     <TextView
-        android:id="@+id/text_chinese"
+        android:id="@+id/chineseText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -35,17 +35,17 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/text_english" />
+        app:layout_constraintTop_toBottomOf="@+id/englishText" />
 
     <TextView
-        android:id="@+id/text_english"
+        android:id="@+id/englishText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:text="TextView"
         android:textSize="25sp"
-        app:layout_constraintBottom_toTopOf="@+id/text_chinese"
+        app:layout_constraintBottom_toTopOf="@+id/chineseText"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/guideline"
@@ -64,7 +64,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Switch
-        android:id="@+id/switch1"
+        android:id="@+id/switch2"
         android:layout_width="50dp"
         android:layout_height="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
