@@ -88,8 +88,31 @@ public class AddFragment extends Fragment {
         editC = requireActivity().findViewById(R.id.editChinese);
         editE = requireActivity().findViewById(R.id.editEnglish);
         button = requireActivity().findViewById(R.id.btnadd);
+        button.setEnabled(false);
         inm =(InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         inm.showSoftInput(editE,0);
+        TextWatcher textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String chinese = editC.getText().toString().trim();
+                String english = editE.getText().toString().trim();
+                if(!chinese.isEmpty()&&!english.isEmpty()){
+                    button.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        };
+        editE.addTextChangedListener(textWatcher);
+        editC.addTextChangedListener(textWatcher);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,6 +123,7 @@ public class AddFragment extends Fragment {
                 word.setChinese(chinese);
                 word.setInv_chinese(true);
                 viewModel.insert(word);
+                viewModel.setIsRecyclerview(true);
                 NavController controller = Navigation.findNavController(button);
                 controller.navigateUp();
             }

@@ -46,9 +46,10 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this,controller);
     }
 
+
+
     @Override
     public boolean onSupportNavigateUp() {
-        controller.navigateUp();
-        return super.onSupportNavigateUp();
+       return controller.navigateUp();
     }
 }

@@ -78,12 +78,18 @@ public class WordsFragment extends Fragment {
 
     private MyAdpater adpater_r, adpater_c;
 
-    int oldSize = 1;
+    /* 除非整个fragment被销毁，不如oldSize不会重新初始化，所以应该在回调方法中初始化
+        这样每次回调oldSize都被重置，因为我们设置oldSize的目的是避免多次刷新，这是针对
+        当前这个wordFragment页面来做的,切换回来应该不受影响
+     */
 
+
+    int oldSize;
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        oldSize = -1;
         viewModel = new ViewModelProvider(requireActivity(),new ViewModelProvider.NewInstanceFactory()).get(MyViewModel.class);
         viewModel.init(getActivity());
         viewModel.setIsRecyclerview(true);
@@ -91,8 +97,9 @@ public class WordsFragment extends Fragment {
         manager = new LinearLayoutManager(getActivity());
         manager.setOrientation(RecyclerView.VERTICAL);
         recyclerView.setLayoutManager(manager);
-        adpater_r = new MyAdpater(R.layout.word_item_update, new ArrayList<Word>(),viewModel);
+        adpater_r = new MyAdpater(R.layout.word_item_update, viewModel.getList().getValue(),viewModel);
         adpater_c = new MyAdpater(R.layout.card_word_item, new ArrayList<Word>(),viewModel);
+        Log.d("看这里",String.valueOf(oldSize));
         viewModel.getList().observe(getActivity(), new Observer<List<Word>>() {
             @Override
             public void onChanged(List<Word> words) {
@@ -163,6 +170,11 @@ public class WordsFragment extends Fragment {
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
@@ -170,7 +182,6 @@ public class WordsFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-
 
 
     @Override
@@ -195,6 +206,7 @@ public class WordsFragment extends Fragment {
         });
         recyclerView.setAdapter(adpater);
     }
+
 
     void changeView_C(MyAdpater adpater, List<Word> wordList){
         adpater.addChildClickViewIds(R.id.Layout2);

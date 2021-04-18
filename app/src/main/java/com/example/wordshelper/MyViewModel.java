@@ -20,7 +20,7 @@ public class MyViewModel  extends ViewModel {
 
        void init(Context context){
            depository = new WordDepository(context);
-           liveWordlist = depository.queryAll();
+           liveWordlist = depository.queryAll(); //
            isRecyclerview = new MutableLiveData<>();
            isRecyclerview.setValue(false);
        }
