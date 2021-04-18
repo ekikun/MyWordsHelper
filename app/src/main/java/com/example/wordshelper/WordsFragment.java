@@ -1,6 +1,7 @@
 package com.example.wordshelper;
 
 import android.animation.Animator;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -18,10 +20,14 @@ import androidx.room.PrimaryKey;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.SearchView;
 import android.widget.Switch;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -70,6 +76,50 @@ public class WordsFragment extends Fragment {
         return fragment;
     }
 
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu,menu);
+        InputMethodManager inm =(InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.app_bar_search).getActionView();
+        inm.showSoftInput(searchView,0);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                newText = newText.trim();
+                filterList.removeObservers(requireActivity());
+                if(newText.matches("[\u4e00-\u9fa5]+")){
+                    filterList = viewModel.queryChinese(newText);
+                }else if(newText.matches("[a-zA-Z]+")){
+                    filterList = viewModel.queryEnglish(newText);
+                }else {
+                    filterList = viewModel.getList();
+                }
+                filterList.observe(requireActivity(), new Observer<List<Word>>() {
+                    @Override
+                    public void onChanged(List<Word> wordList) {
+                        if(viewModel.getIsRecyclerview().getValue()){
+                            MyAdpater adpater = adpater_r;
+                            adpater.setList(wordList);
+                            changeView_R(adpater,wordList);
+                        }else{
+                            MyAdpater adpater = adpater_c;
+                            adpater.setList(wordList);
+                            changeView_C(adpater,wordList);
+                        }
+                    }
+                });
+                inm.hideSoftInputFromWindow(getView().getWindowToken(),0);
+                return true;
+            }
+        });
+    }
+
     private MyViewModel viewModel;
 
     private RecyclerView recyclerView;
@@ -83,6 +133,8 @@ public class WordsFragment extends Fragment {
         当前这个wordFragment页面来做的,切换回来应该不受影响
      */
 
+
+    private LiveData<List<Word>> filterList;
 
     int oldSize;
 
@@ -99,8 +151,8 @@ public class WordsFragment extends Fragment {
         recyclerView.setLayoutManager(manager);
         adpater_r = new MyAdpater(R.layout.word_item_update, viewModel.getList().getValue(),viewModel);
         adpater_c = new MyAdpater(R.layout.card_word_item, new ArrayList<Word>(),viewModel);
-        Log.d("看这里",String.valueOf(oldSize));
-        viewModel.getList().observe(getActivity(), new Observer<List<Word>>() {
+        filterList = viewModel.getList();
+        filterList.observe(getActivity(), new Observer<List<Word>>() {
             @Override
             public void onChanged(List<Word> words) {
                 if(viewModel.getIsRecyclerview().getValue()){
@@ -176,6 +228,7 @@ public class WordsFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);

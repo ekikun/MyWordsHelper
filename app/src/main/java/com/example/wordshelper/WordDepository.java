@@ -15,6 +15,10 @@ public class WordDepository {
 
     private LiveData<List<Word>> wordList;
 
+    private LiveData<List<Word>> englishList;
+
+    private LiveData<List<Word>> chineseList;
+
     private WordDao dao;
 
     private WordDataBase dataBase;
@@ -39,6 +43,15 @@ public class WordDepository {
 
     void deleteAll(){
         new Thread(new DeleteAllThread()).start();
+    }
+
+    LiveData<List<Word>> queryChinese(String chinese){
+        chineseList  = dao.queryChinese("%"+chinese+"%");
+        return chineseList;
+    }
+    LiveData<List<Word>> queryEnglish(String english){
+        englishList  = dao.queryEnglish("%"+english+"%");
+        return englishList;
     }
 
     LiveData<Word> query(int id){

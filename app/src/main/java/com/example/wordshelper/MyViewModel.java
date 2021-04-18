@@ -14,13 +14,19 @@ public class MyViewModel  extends ViewModel {
 
     private LiveData<Word> liveWord;
 
+    private LiveData<List<Word>> englishList;
+
+    private LiveData<List<Word>> chineseList;
+
     private MutableLiveData<Boolean> isRecyclerview;
 
     private WordDepository depository;
 
        void init(Context context){
            depository = new WordDepository(context);
-           liveWordlist = depository.queryAll(); //
+           chineseList = new MutableLiveData<>();
+           englishList = new MutableLiveData<>();
+           liveWordlist = depository.queryAll();
            isRecyclerview = new MutableLiveData<>();
            isRecyclerview.setValue(false);
        }
@@ -50,4 +56,14 @@ public class MyViewModel  extends ViewModel {
        void setIsRecyclerview(boolean b){
            isRecyclerview.setValue(b);
        }
+
+    LiveData<List<Word>> queryChinese(String chinese){
+        chineseList  = depository.queryChinese(chinese);
+        return chineseList;
+    }
+
+    LiveData<List<Word>> queryEnglish(String english){
+        englishList  = depository.queryEnglish(english);
+        return englishList;
+    }
 }

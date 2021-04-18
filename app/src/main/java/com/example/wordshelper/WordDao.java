@@ -33,4 +33,10 @@ public interface WordDao {
 
     @Query("DELETE FROM sqlite_sequence")
     public void clear();
+
+    @Query("SELECT * FROM Word WHERE English LIKE :english")
+    LiveData<List<Word>> queryEnglish(String english);
+
+    @Query("SELECT * FROM Word WHERE Chinese LIKE :chinese")
+    LiveData<List<Word>> queryChinese(String chinese);
 }
