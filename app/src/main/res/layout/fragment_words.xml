@@ -16,12 +16,11 @@
             android:id="@+id/fraRecycler"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/guideline3"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline3"
@@ -30,19 +29,6 @@
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.9" />
 
-
-        <Switch
-            android:id="@+id/card_recycler"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:text="CardView"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.23"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/fraRecycler"
-            app:layout_constraintVertical_bias="0.434" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/to_add"
@@ -55,24 +41,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/fraRecycler"
-            app:layout_constraintVertical_bias="1.0" />
-
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:backgroundTintMode="multiply"
-            android:text="清空"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="@color/teal_200"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.755"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline3"
-            app:layout_constraintVertical_bias="0.36" />
+            app:layout_constraintTop_toTopOf="@+id/guideline3" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

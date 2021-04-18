@@ -1,7 +1,10 @@
 package com.example.wordshelper;
 
 import android.animation.Animator;
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,6 +25,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -118,6 +122,38 @@ public class WordsFragment extends Fragment {
                 return true;
             }
         });
+
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.changeItem:
+                viewModel.setIsRecyclerview(!viewModel.getIsRecyclerview().getValue());
+                break;
+            case R.id.deleteItem:
+                AlertDialog.Builder builder =  new AlertDialog.Builder(requireActivity());
+                builder.setTitle("清空数据");
+                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        viewModel.deleteAll();
+                    }
+                });
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                builder.create();
+                builder.show();
+                break;
+            default:
+                break;
+        }
+        return true;
     }
 
     private MyViewModel viewModel;
@@ -144,7 +180,6 @@ public class WordsFragment extends Fragment {
         oldSize = -1;
         viewModel = new ViewModelProvider(requireActivity(),new ViewModelProvider.NewInstanceFactory()).get(MyViewModel.class);
         viewModel.init(getActivity());
-        viewModel.setIsRecyclerview(true);
         recyclerView = getActivity().findViewById(R.id.fraRecycler);
         manager = new LinearLayoutManager(getActivity());
         manager.setOrientation(RecyclerView.VERTICAL);
@@ -193,30 +228,12 @@ public class WordsFragment extends Fragment {
 
             }
         });
-        Switch sWtich = requireActivity().findViewById(R.id.card_recycler);
-        sWtich.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    viewModel.setIsRecyclerview(false);
-                }else {
-                    viewModel.setIsRecyclerview(true);
-                }
-            }
-        });
         FloatingActionButton button = getActivity().findViewById(R.id.to_add);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 NavController controller = Navigation.findNavController(button);
                 controller.navigate(R.id.action_wordsFragment_to_addFragment);
-            }
-        });
-        Button button2 = requireActivity().findViewById(R.id.button2);
-        button2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewModel.deleteAll();
             }
         });
     }
