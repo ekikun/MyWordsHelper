@@ -105,8 +105,13 @@ public class WordsFragment extends Fragment {
                     filterList = viewModel.getList();
                 }
                 filterList.observe(requireActivity(), new Observer<List<Word>>() {
+                    int tmp = -1;
                     @Override
                     public void onChanged(List<Word> wordList) {
+                        if(tmp==wordList.size()){
+                            return;
+                        }
+                        Log.d("看这里2","执行了这部分的监听");
                         if(viewModel.getIsRecyclerview().getValue()){
                             MyAdpater adpater = adpater_r;
                             adpater.setList(wordList);
@@ -116,6 +121,7 @@ public class WordsFragment extends Fragment {
                             adpater.setList(wordList);
                             changeView_C(adpater,wordList);
                         }
+                        tmp = wordList.size();
                     }
                 });
                 inm.hideSoftInputFromWindow(getView().getWindowToken(),0);
@@ -196,6 +202,7 @@ public class WordsFragment extends Fragment {
                     if(wordList.size()==oldSize){
                         return;
                     }
+                    Log.d("看这里1","执行了这部分的监听");
                     adpater.setList(wordList);
                     changeView_R(adpater,wordList);
                     oldSize = wordList.size();
