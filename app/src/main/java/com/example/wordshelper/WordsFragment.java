@@ -17,6 +17,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.PrimaryKey;
@@ -37,6 +38,7 @@ import android.widget.Switch;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.listener.OnItemChildClickListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -104,7 +106,7 @@ public class WordsFragment extends Fragment {
                 }else {
                     filterList = viewModel.getList();
                 }
-                filterList.observe(requireActivity(), new Observer<List<Word>>() {
+                filterList.observe(getViewLifecycleOwner(), new Observer<List<Word>>() {
                     int tmp = -1;
                     @Override
                     public void onChanged(List<Word> wordList) {
@@ -170,6 +172,8 @@ public class WordsFragment extends Fragment {
 
     private MyAdpater adpater_r, adpater_c;
 
+    private List<Word> allWords;
+
     /* 除非整个fragment被销毁，不如oldSize不会重新初始化，所以应该在回调方法中初始化
         这样每次回调oldSize都被重置，因为我们设置oldSize的目的是避免多次刷新，这是针对
         当前这个wordFragment页面来做的,切换回来应该不受影响
@@ -184,18 +188,15 @@ public class WordsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         oldSize = -1;
-        viewModel = new ViewModelProvider(requireActivity(),new ViewModelProvider.NewInstanceFactory()).get(MyViewModel.class);
-        viewModel.init(getActivity());
         recyclerView = getActivity().findViewById(R.id.fraRecycler);
         manager = new LinearLayoutManager(getActivity());
         manager.setOrientation(RecyclerView.VERTICAL);
         recyclerView.setLayoutManager(manager);
-        adpater_r = new MyAdpater(R.layout.word_item_update, viewModel.getList().getValue(),viewModel);
-        adpater_c = new MyAdpater(R.layout.card_word_item, new ArrayList<Word>(),viewModel);
         filterList = viewModel.getList();
-        filterList.observe(getActivity(), new Observer<List<Word>>() {
+        filterList.observe(getViewLifecycleOwner(), new Observer<List<Word>>() {
             @Override
             public void onChanged(List<Word> words) {
+                allWords = words;
                 if(viewModel.getIsRecyclerview().getValue()){
                     MyAdpater adpater = adpater_r;
                     List<Word> wordList = viewModel.getList().getValue();
@@ -218,7 +219,7 @@ public class WordsFragment extends Fragment {
                 }
             }
         });
-        viewModel.getIsRecyclerview().observe(getActivity(), new Observer<Boolean>() {
+        viewModel.getIsRecyclerview().observe(requireActivity(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
                 MyAdpater adpater;
@@ -235,6 +236,26 @@ public class WordsFragment extends Fragment {
 
             }
         });
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.START|ItemTouchHelper.END) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                Word word = allWords.get(viewHolder.getAdapterPosition());
+                viewModel.delete(word);
+                Snackbar.make(requireActivity().findViewById(R.id.wordsFragment),"删除了该词汇",
+                        Snackbar.LENGTH_SHORT).setAction("撤销", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                         viewModel.insert(word);
+                    }
+                }).show();
+            }
+        }).attachToRecyclerView(recyclerView);
+
         FloatingActionButton button = getActivity().findViewById(R.id.to_add);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -258,6 +279,10 @@ public class WordsFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        viewModel = new ViewModelProvider(requireActivity(),new ViewModelProvider.NewInstanceFactory()).get(MyViewModel.class);
+        viewModel.init(getActivity());
+        adpater_r = new MyAdpater(R.layout.word_item_update, viewModel.getList().getValue(),viewModel);
+        adpater_c = new MyAdpater(R.layout.card_word_item, new ArrayList<Word>(),viewModel);
     }
 
 
@@ -282,6 +307,7 @@ public class WordsFragment extends Fragment {
             }
         });
         recyclerView.setAdapter(adpater);
+
     }
 
 

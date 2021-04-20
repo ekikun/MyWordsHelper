@@ -12,7 +12,9 @@
         tools:layout="@layout/fragment_words">
         <action
             android:id="@+id/action_wordsFragment_to_addFragment"
-            app:destination="@id/addFragment" />
+            app:destination="@id/addFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim" />
     </fragment>
     <fragment
         android:id="@+id/addFragment"
@@ -21,6 +23,8 @@
         tools:layout="@layout/fragment_add">
         <action
             android:id="@+id/action_addFragment_to_wordsFragment"
-            app:destination="@id/wordsFragment" />
+            app:destination="@id/wordsFragment"
+            app:enterAnim="@android:anim/accelerate_interpolator"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim" />
     </fragment>
 </navigation>

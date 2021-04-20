@@ -30,18 +30,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.1" />
+            app:layout_constraintGuide_percent="0" />
 
-        <TextView
-            android:id="@+id/idText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="1"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/guideline7"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/englishText"

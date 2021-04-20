@@ -23,7 +23,6 @@ public class MyAdpater extends BaseQuickAdapter<Word, BaseViewHolder> {
 
     @Override
     protected void convert(@NotNull BaseViewHolder baseViewHolder, Word word) {
-        baseViewHolder.setText(R.id.idText, String.valueOf(word.getId()));
         baseViewHolder.setText(R.id.englishText,word.getEnglish());
         baseViewHolder.setText(R.id.chineseText,word.getChinese());
         Switch switchs = baseViewHolder.findView(R.id.switch2);
