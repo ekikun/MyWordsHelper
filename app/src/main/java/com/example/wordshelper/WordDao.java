@@ -39,4 +39,7 @@ public interface WordDao {
 
     @Query("SELECT * FROM Word WHERE Chinese LIKE :chinese")
     LiveData<List<Word>> queryChinese(String chinese);
+
+    @Query("SELECT * FROM Word")
+    List<Word> queryForsplash();
 }

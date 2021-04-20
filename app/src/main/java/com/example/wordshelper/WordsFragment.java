@@ -174,6 +174,8 @@ public class WordsFragment extends Fragment {
 
     private List<Word> allWords;
 
+    MyAdpater adpater;
+
     /* 除非整个fragment被销毁，不如oldSize不会重新初始化，所以应该在回调方法中初始化
         这样每次回调oldSize都被重置，因为我们设置oldSize的目的是避免多次刷新，这是针对
         当前这个wordFragment页面来做的,切换回来应该不受影响
@@ -283,6 +285,7 @@ public class WordsFragment extends Fragment {
         viewModel.init(getActivity());
         adpater_r = new MyAdpater(R.layout.word_item_update, viewModel.getList().getValue(),viewModel);
         adpater_c = new MyAdpater(R.layout.card_word_item, new ArrayList<Word>(),viewModel);
+
     }
 
 
@@ -307,7 +310,6 @@ public class WordsFragment extends Fragment {
             }
         });
         recyclerView.setAdapter(adpater);
-
     }
 
 

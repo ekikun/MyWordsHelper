@@ -15,6 +15,8 @@ public class WordDepository {
 
     private LiveData<List<Word>> wordList;
 
+    private List<Word> list;
+
     private LiveData<List<Word>> englishList;
 
     private LiveData<List<Word>> chineseList;
@@ -44,6 +46,7 @@ public class WordDepository {
     void deleteAll(){
         new Thread(new DeleteAllThread()).start();
     }
+
 
     LiveData<List<Word>> queryChinese(String chinese){
         chineseList  = dao.queryChinese("%"+chinese+"%");
@@ -114,6 +117,7 @@ public class WordDepository {
             dao.clear();
         }
     }
+
 
 
 
