@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="dialogstyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/dialogshape</item>
+    </style>
+    <style name="MybottomSheetDialog" parent="Theme.Design.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/dialogstyle</item>
+    </style>
+</resources>

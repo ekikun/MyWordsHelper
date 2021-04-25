@@ -41,11 +41,11 @@ public class Splash extends AppCompatActivity {
         list.observe(this, new Observer<List<Word>>() {
             @Override
             public void onChanged(List<Word> wordList) {
-                if(wordList.size()!=0){
+                if(wordList.size()>1){
                     int flag = r.nextInt(wordList.size()-1);
                     textView.setText(wordList.get(flag).getEnglish()+"\n\n"+wordList.get(flag).getChinese());
                 }else{
-                    textView.setText("Keep\n\nLearning");
+                    textView.setText("Keep\nLearning");
                 }
             }
         });

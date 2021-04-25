@@ -31,10 +31,10 @@ public class MyAdpater extends BaseQuickAdapter<Word, BaseViewHolder> {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
                     word.setInv_chinese(false);
-                    baseViewHolder.setGone(R.id.chineseText,true);
+                    baseViewHolder.setVisible(R.id.chineseText,false);
                     viewModel.update(word);
                 }else{
-                    baseViewHolder.setGone(R.id.chineseText,false);
+                    baseViewHolder.setVisible(R.id.chineseText,true);
                     baseViewHolder.setText(R.id.chineseText,word.getChinese());
                     word.setInv_chinese(true);
                     viewModel.update(word);

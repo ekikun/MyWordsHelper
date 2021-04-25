@@ -1,12 +1,9 @@
 package com.example.wordshelper;
 
-import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -20,8 +17,9 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.PrimaryKey;
 
+import android.speech.tts.TextToSpeech;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -29,19 +27,21 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.SearchView;
-import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.listener.OnItemChildClickListener;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -174,7 +174,12 @@ public class WordsFragment extends Fragment {
 
     private List<Word> allWords;
 
-    MyAdpater adpater;
+    WindowManager wm;
+
+    int height;
+
+    MyTTs ts;
+
 
     /* 除非整个fragment被销毁，不如oldSize不会重新初始化，所以应该在回调方法中初始化
         这样每次回调oldSize都被重置，因为我们设置oldSize的目的是避免多次刷新，这是针对
@@ -301,11 +306,7 @@ public class WordsFragment extends Fragment {
             @Override
             public void onItemChildClick(@NonNull BaseQuickAdapter adapter, @NonNull View view, int position) {
                 if (view.getId() == R.id.Layout1) {
-                    System.out.println("被点击");
-                    Uri uri = Uri.parse("https://m.youdao.com/dict?le=eng&q="+wordList.get(position).getEnglish());
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(uri);
-                    startActivity(intent);
+                   showBottomSheetDialog(wordList,position);
                 }
             }
         });
@@ -317,12 +318,85 @@ public class WordsFragment extends Fragment {
         adpater.addChildClickViewIds(R.id.Layout2);
         adpater.setOnItemChildClickListener((adapter, view, position) -> {
             if(view.getId()==R.id.Layout2){
-                Uri uri = Uri.parse("https://m.youdao.com/dict?le=eng&q="+wordList.get(position).getEnglish());
-                Intent intent = new Intent("android.intent.action.VIEW");
-                intent.setData(uri);
-                startActivity(intent);
+                showBottomSheetDialog(wordList,position);
             }
         });
         recyclerView.setAdapter(adpater);
+    }
+
+    @SuppressLint("SetTextI18n")
+    void showBottomSheetDialog(List<Word>wordList, int position){
+        View view = requireActivity().getLayoutInflater().inflate(R.layout.dialog,null);
+        TextView textWord = view.findViewById(R.id.wordText);
+        TextView textUc = view.findViewById(R.id.userChinese);
+        TextView textAc = view.findViewById(R.id.apiChinese);
+        textUc.setText(wordList.get(position).getChinese());
+        textAc.setText("abbr. （计算机）应用程序 (application)\n" +
+                "n. (App) （美、德、巴）阿普（人名）");
+        textWord.setText(wordList.get(position).getEnglish());
+        Button speak = view.findViewById(R.id.button);
+        speak.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String english = textWord.getText().toString().trim();
+                speakEnglish(english);
+            }
+        });
+        textWord.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String english = textWord.getText().toString().trim();
+                speakEnglish(english);
+            }
+        });
+        DisplayMetrics metrics = new DisplayMetrics();
+        requireActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        int height = metrics.heightPixels;
+        BottomSheetDialog dialog = new BottomSheetDialog(requireActivity(),R.style.MybottomSheetDialog);
+        dialog.setCanceledOnTouchOutside(true);
+        view.setMinimumHeight((int)(0.4*height));
+        dialog.setContentView(view);
+        BottomSheetBehavior behavior = BottomSheetBehavior.from((View) view.getParent());
+        dialog.show();
+    }
+
+    String getTranslation(String english){
+        return "ok";
+    }
+
+    void speakEnglish(String english){
+        ts = new MyTTs(requireActivity(),english);
+    }
+
+    class MyTTs implements TextToSpeech.OnInitListener{
+        private TextToSpeech mSpeech;
+        private Context mContext;
+        private String text;
+        @Override
+        public void onInit(int status) {
+            mSpeech.setPitch(0.5f);
+            mSpeech.setSpeechRate(1.0f);
+            mSpeech.speak(text,TextToSpeech.QUEUE_ADD,null);
+        }
+
+        MyTTs(Context mContext, String text){
+            this.mContext = mContext;
+            this.text = text;
+            this.mSpeech = new TextToSpeech(mContext,this);
+        }
+
+        void stopTTs(){
+            mSpeech.stop();
+            mSpeech.shutdown();
+            mSpeech = null;
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(ts!=null){
+            ts.stopTTs();
+        }
     }
 }
