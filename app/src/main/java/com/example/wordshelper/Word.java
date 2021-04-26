@@ -18,6 +18,9 @@ public class Word {
     @ColumnInfo(name = "Chinese_Invisble")
     boolean inv_chinese;
 
+    @ColumnInfo(name = "ApiChinese")
+    String apiChinese;
+
     public int getId() {
         return id;
     }
@@ -48,5 +51,13 @@ public class Word {
 
     public void setInv_chinese(boolean inv_chinese) {
         this.inv_chinese = inv_chinese;
+    }
+
+    public String getApiChinese() {
+        return apiChinese;
+    }
+
+    public void setApiChinese(String apiChinese) {
+        this.apiChinese = apiChinese;
     }
 }

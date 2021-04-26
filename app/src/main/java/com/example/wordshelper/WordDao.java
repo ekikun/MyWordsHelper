@@ -42,4 +42,6 @@ public interface WordDao {
 
     @Query("SELECT * FROM Word")
     List<Word> queryForsplash();
+
+
 }

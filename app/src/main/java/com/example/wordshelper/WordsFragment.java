@@ -143,17 +143,9 @@ public class WordsFragment extends Fragment {
             case R.id.deleteItem:
                 AlertDialog.Builder builder =  new AlertDialog.Builder(requireActivity());
                 builder.setTitle("清空数据");
-                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        viewModel.deleteAll();
-                    }
-                });
-                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                builder.setPositiveButton("确定", (dialog, which) -> viewModel.deleteAll());
+                builder.setNegativeButton("取消", (dialog, which) -> {
 
-                    }
                 });
                 builder.create();
                 builder.show();
@@ -173,10 +165,6 @@ public class WordsFragment extends Fragment {
     private MyAdpater adpater_r, adpater_c;
 
     private List<Word> allWords;
-
-    WindowManager wm;
-
-    int height;
 
     MyTTs ts;
 
@@ -200,48 +188,42 @@ public class WordsFragment extends Fragment {
         manager.setOrientation(RecyclerView.VERTICAL);
         recyclerView.setLayoutManager(manager);
         filterList = viewModel.getList();
-        filterList.observe(getViewLifecycleOwner(), new Observer<List<Word>>() {
-            @Override
-            public void onChanged(List<Word> words) {
-                allWords = words;
-                if(viewModel.getIsRecyclerview().getValue()){
-                    MyAdpater adpater = adpater_r;
-                    List<Word> wordList = viewModel.getList().getValue();
-                    if(wordList.size()==oldSize){
-                        return;
-                    }
-                    Log.d("看这里1","执行了这部分的监听");
-                    adpater.setList(wordList);
-                    changeView_R(adpater,wordList);
-                    oldSize = wordList.size();
-                }else{
-                    MyAdpater adpater = adpater_c;
-                    List<Word> wordList = viewModel.getList().getValue();
-                    if(wordList.size()==oldSize){
-                        return;
-                    }
-                    adpater.setList(wordList);
-                    changeView_C(adpater,wordList);
-                    oldSize = wordList.size();
+        filterList.observe(getViewLifecycleOwner(), words -> {
+            allWords = words;
+            if(viewModel.getIsRecyclerview().getValue()){
+                MyAdpater adpater = adpater_r;
+                List<Word> wordList = viewModel.getList().getValue();
+                if(wordList.size()==oldSize){
+                    return;
                 }
+                Log.d("看这里1","执行了这部分的监听");
+                adpater.setList(wordList);
+                changeView_R(adpater,wordList);
+                oldSize = wordList.size();
+            }else{
+                MyAdpater adpater = adpater_c;
+                List<Word> wordList = viewModel.getList().getValue();
+                if(wordList.size()==oldSize){
+                    return;
+                }
+                adpater.setList(wordList);
+                changeView_C(adpater,wordList);
+                oldSize = wordList.size();
             }
         });
-        viewModel.getIsRecyclerview().observe(requireActivity(), new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                MyAdpater adpater;
-                List<Word> wordList = viewModel.getList().getValue();
-                if(viewModel.getIsRecyclerview().getValue()){
-                    adpater = adpater_r;
-                    adpater.setList(wordList);
-                    changeView_R(adpater, wordList);
-                }else{
-                    adpater = adpater_c;
-                    adpater.setList(wordList);
-                    changeView_C(adpater,wordList);
-                }
-
+        viewModel.getIsRecyclerview().observe(requireActivity(), aBoolean -> {
+            MyAdpater adpater;
+            List<Word> wordList = viewModel.getList().getValue();
+            if(viewModel.getIsRecyclerview().getValue()){
+                adpater = adpater_r;
+                adpater.setList(wordList);
+                changeView_R(adpater, wordList);
+            }else{
+                adpater = adpater_c;
+                adpater.setList(wordList);
+                changeView_C(adpater,wordList);
             }
+
         });
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.START|ItemTouchHelper.END) {
             @Override
@@ -331,8 +313,11 @@ public class WordsFragment extends Fragment {
         TextView textUc = view.findViewById(R.id.userChinese);
         TextView textAc = view.findViewById(R.id.apiChinese);
         textUc.setText(wordList.get(position).getChinese());
-        textAc.setText("abbr. （计算机）应用程序 (application)\n" +
-                "n. (App) （美、德、巴）阿普（人名）");
+        textAc.setText(wordList.get(position).getApiChinese());
+        int len = wordList.get(position).getEnglish().length();
+        if(len>12){
+            textWord.setTextSize(32f);
+        }
         textWord.setText(wordList.get(position).getEnglish());
         Button speak = view.findViewById(R.id.button);
         speak.setOnClickListener(new View.OnClickListener() {
@@ -360,9 +345,6 @@ public class WordsFragment extends Fragment {
         dialog.show();
     }
 
-    String getTranslation(String english){
-        return "ok";
-    }
 
     void speakEnglish(String english){
         ts = new MyTTs(requireActivity(),english);
